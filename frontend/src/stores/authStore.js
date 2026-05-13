@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import axios from 'axios'
+import axios from '../axiosConfig'
 
 export const useAuth = create((set)=>({
     currentUser:null,
@@ -11,7 +11,7 @@ export const useAuth = create((set)=>({
             //set loading true and error null
             set({loading:true,error:null})
             //make api call
-            let res = await axios.get("http://localhost:3000/common-api/check-auth",{withCredentials:true})
+            let res = await axios.get("/common-api/check-auth")
             res=res.data
             // console.log(res)
             set({
@@ -37,7 +37,7 @@ export const useAuth = create((set)=>({
             //set loading true and error null
             set({loading:true,error:null})
             //make api call
-            let res = await axios.post("http://localhost:3000/common-api/login",userCredObj,{withCredentials:true})
+            let res = await axios.post("/common-api/login",userCredObj)
             res=res.data
             // console.log(res)
             //update state
@@ -61,7 +61,7 @@ export const useAuth = create((set)=>({
     logout :async ()=>{
       try {
         set({loading:true,error:null})
-        let res =await axios.get("http://localhost:3000/common-api/logout",{withCredentials:true})
+        let res =await axios.get("/common-api/logout")
         res=res.data
         // console.log(res)
         set({

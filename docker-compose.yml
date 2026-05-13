@@ -5,13 +5,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        - HOST_IP=${HOST_IP:-localhost}
     ports:
-      - "80:80"
-      - "3000:3000"
+      - "80:80" # Maps local port 80 to container $PORT (default 80)
     environment:
-      - HOST_IP=${HOST_IP:-localhost}
+      - PORT=80 # Simulating Render's $PORT
       - JWT_SECRET=${JWT_SECRET}
       - CLOUD_NAME=${CLOUD_NAME}
       - API_KEY=${API_KEY}

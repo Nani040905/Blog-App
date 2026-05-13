@@ -19,9 +19,8 @@ COPY frontend/package*.json ./frontend/
 RUN cd frontend && npm install
 
 COPY frontend/ ./frontend/
-# Set build-time variables for Vite
-ARG HOST_IP=localhost
-ENV VITE_API_URL=http://${HOST_IP}:3000
+# For Render, use relative paths so frontend calls the same domain/port
+ENV VITE_API_URL=""
 RUN cd frontend && npm run build
 
 # --- Setup Backend ---
@@ -32,13 +31,26 @@ COPY backend/ ./backend/
 
 # --- Setup Nginx ---
 RUN rm /etc/nginx/sites-enabled/default
-COPY <<EOF /etc/nginx/sites-available/blogapp
+# Use quoted EOF to prevent shell expansion of Nginx variables during build
+COPY <<'EOF' /etc/nginx/sites-available/blogapp
 server {
-    listen 80;
+    listen %PORT%;
+    
+    # Serve Frontend static files
     location / {
         root /app/frontend/dist;
         index index.html;
         try_files $uri $uri/ /index.html;
+    }
+
+    # Proxy API requests to Backend
+    location ~ ^/(user|author|admin|common)-api/ {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
     }
 }
 EOF
@@ -48,7 +60,7 @@ RUN ln -s /etc/nginx/sites-available/blogapp /etc/nginx/sites-enabled/
 COPY entrypoint.sh .
 RUN chmod +x entrypoint.sh
 
-# Expose ports
+# Expose ports (Render will use $PORT)
 EXPOSE 80 3000 27017
 
 # Set production environment

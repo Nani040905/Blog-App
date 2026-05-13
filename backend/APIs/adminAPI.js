@@ -2,11 +2,11 @@ import express from 'express';
 import { verifyToken } from '../middleware/verifyToken.js'
 import { UserTypeModel } from '../models/userModel.js';
 import { ArticleModel } from '../models/articleModel.js';
-import {checkAdmin} from '../middleware/checkAdmin.js'
+import { checkAdmin } from '../middleware/checkAdmin.js'
 export const adminRoute = express.Router();
 
 //Read all articles
-adminRoute.get('/articles', verifyToken, async(req, res)=>{
+adminRoute.get('/articles', verifyToken, async (req, res) => {
     //find all articles from database
     let articles = await ArticleModel.find();
 
@@ -16,12 +16,12 @@ adminRoute.get('/articles', verifyToken, async(req, res)=>{
 
 
 //Block User
-adminRoute.put('/block-user', verifyToken, checkAdmin, async(req, res)=>{
+adminRoute.put('/block-user', verifyToken, checkAdmin, async (req, res) => {
     //get details of the user form req
-    let{ userId, adminId } = req.body;
+    let { userId, adminId } = req.body;
     //verify admin
     let admin = await UserTypeModel.findById(adminId);
-    if(!admin) {
+    if (!admin) {
         return res.status(403).json({ message: "User not found" });
     }
 
@@ -35,12 +35,12 @@ adminRoute.put('/block-user', verifyToken, checkAdmin, async(req, res)=>{
 
 
 //Unblock user
-adminRoute.put('/unblock-user', verifyToken, checkAdmin, async(req, res)=>{
+adminRoute.put('/unblock-user', verifyToken, checkAdmin, async (req, res) => {
     //get details of the user form req
-    let{ userId, adminId } = req.body;
+    let { userId, adminId } = req.body;
     //verify admin
     let admin = await UserTypeModel.findById(adminId);
-    if(!admin) {
+    if (!admin) {
         return res.status(403).json({ message: "User not found" });
     }
 

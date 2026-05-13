@@ -19,9 +19,14 @@ COPY frontend/package*.json ./frontend/
 RUN cd frontend && npm install
 
 COPY frontend/ ./frontend/
+<<<<<<< Updated upstream
 # Set build-time variables for Vite
 ARG HOST_IP=localhost
 ENV VITE_API_URL=http://${HOST_IP}:3000
+=======
+# For Render monolith, we use relative paths, so VITE_API_URL can be empty
+ENV VITE_API_URL=""
+>>>>>>> Stashed changes
 RUN cd frontend && npm run build
 
 # --- Setup Backend ---
@@ -32,14 +37,36 @@ COPY backend/ ./backend/
 
 # --- Setup Nginx ---
 RUN rm /etc/nginx/sites-enabled/default
+<<<<<<< Updated upstream
 COPY <<EOF /etc/nginx/sites-available/blogapp
 server {
     listen 80;
+=======
+# Escape $ to prevent shell expansion during build
+COPY <<'EOF' /etc/nginx/sites-available/blogapp
+server {
+    listen %PORT%;
+    
+    # Frontend static files
+>>>>>>> Stashed changes
     location / {
         root /app/frontend/dist;
         index index.html;
         try_files $uri $uri/ /index.html;
     }
+<<<<<<< Updated upstream
+=======
+
+    # Proxy API requests to backend
+    location ~ ^/(user|author|admin|common)-api/ {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+>>>>>>> Stashed changes
 }
 EOF
 RUN ln -s /etc/nginx/sites-available/blogapp /etc/nginx/sites-enabled/
@@ -48,7 +75,11 @@ RUN ln -s /etc/nginx/sites-available/blogapp /etc/nginx/sites-enabled/
 COPY entrypoint.sh .
 RUN chmod +x entrypoint.sh
 
+<<<<<<< Updated upstream
 # Expose ports
+=======
+# Expose ports (Render will use $PORT)
+>>>>>>> Stashed changes
 EXPOSE 80 3000 27017
 
 # Set production environment

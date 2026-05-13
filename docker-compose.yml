@@ -11,7 +11,11 @@ services:
       - "80:80"
       - "3000:3000"
     environment:
+<<<<<<< Updated upstream
       - HOST_IP=${HOST_IP:-localhost}
+=======
+      - PORT=80
+>>>>>>> Stashed changes
       - JWT_SECRET=${JWT_SECRET}
       - CLOUD_NAME=${CLOUD_NAME}
       - API_KEY=${API_KEY}
